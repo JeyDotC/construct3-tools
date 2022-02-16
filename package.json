@@ -15,5 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "image-pixels": "^2.2.2"
+  },
+  "devDependencies": {
+    "electron": "^17.0.1"
   }
 }
