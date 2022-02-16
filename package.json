@@ -1,0 +1,19 @@
+{
+  "name": "construct3-kit",
+  "version": "1.0.0",
+  "description": "Tools for Construct3 projects,",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "construct3",
+    "image",
+    "points"
+  ],
+  "author": "JeyDotC",
+  "license": "MIT",
+  "dependencies": {
+    "image-pixels": "^2.2.2"
+  }
+}
