@@ -4,6 +4,7 @@
   "description": "Tools for Construct3 projects,",
   "main": "index.js",
   "scripts": {
+    "start": "bash ./setup-justjs.sh && electron ./index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -14,6 +15,7 @@
   "author": "JeyDotC",
   "license": "MIT",
   "dependencies": {
+    "@jeydotc/justjs": "^1.0.1",
     "image-pixels": "^2.2.2"
   },
   "devDependencies": {
