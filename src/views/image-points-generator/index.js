@@ -1,10 +1,13 @@
-import { h1, div, form, label, input, span, state, sideEffect } from '../../../public/justjs/index.js';
+import { h1, div, form, label, input, span, button, hr, state, sideEffect } from '../../../public/justjs/index.js';
+import { MarkerEntry } from './MarkerEntry.js';
+import { MarkerForm } from './MarkerForm.js';
 import { ObjectTypesSelect } from './ObjecTypesSelect.js';
 
 function ImagePointsGenerator() {
     const [, setProjectRoot, subscribeToProjectRoot] = state('');
     const [, setObjectType, subscribeToObjectType] = state('');
     const [, setObjectTypes, subscribeToObjectTypes] = state([]);
+    const [getMarkers, setMarkers, subscribeToMarkers] = state([]);
 
     const handleProjectSelected = (event) => {
         const files = event.target.files;
@@ -29,13 +32,23 @@ function ImagePointsGenerator() {
             const normalizedPath = file.path.replaceAll('\\', '/');
 
             if (normalizedPath.startsWith(objectTypesFolder) && normalizedPath.endsWith('.json')) {
-                const name = file.name;
+                const name = file.name.substring(0, file.name.lastIndexOf("."));
                 fileList.push({ path: normalizedPath, name });
             }
         }
 
         setObjectTypes(fileList);
     };
+
+    const handleMarkerAdd = (marker) => {
+        const currentMarkers = getMarkers();
+        // Avoid repeated numbers and replace them with the newer version.
+        const markers = currentMarkers.filter(({ number }) => marker.number !== number);
+
+        setMarkers([...markers, marker].sort((a, b) => a.number - b.number))
+    };
+
+    const handleRemoveMarker = (number) => setMarkers(getMarkers().filter((marker) => marker.number !== number));
 
     return div({},
         h1({}, 'Image Points Generator'),
@@ -57,9 +70,28 @@ function ImagePointsGenerator() {
                 )
             ),
             sideEffect(
-                objectTypes => ObjectTypesSelect({ objectTypes }),
+                objectTypes => ObjectTypesSelect({ objectTypes, onObjectTypeSelected: setObjectType }),
                 subscribeToObjectTypes
             ),
+            sideEffect(
+                markers => div({}, 
+                    hr(),
+                    ...markers.map(({ number, name, color }) => MarkerEntry({ number, name, color, onRemoveMarker: handleRemoveMarker }))
+                ),
+                subscribeToMarkers
+            ),
+            MarkerForm({ onAddMarker: handleMarkerAdd }),
+            div({ class: "text-end"}, 
+                button({ 
+                    class: "btn btn-primary", 
+                    disabled: sideEffect(
+                        (markers, objectType, projectRoot) => markers.length === 0 || objectType.length === 0 || projectRoot.length === 0,
+                        subscribeToMarkers,
+                        subscribeToObjectType,
+                        subscribeToProjectRoot
+                    ),
+                }, "Generate Image Points")
+            )
         )
     )
 }
