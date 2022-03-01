@@ -1,14 +1,16 @@
-import { h1, div, form, label, input, select, option, state, sideEffect } from '../../../public/justjs/index.js';
+import { h1, div, form, label, input, span, state, sideEffect } from '../../../public/justjs/index.js';
+import { ObjectTypesSelect } from './ObjecTypesSelect.js';
 
 function ImagePointsGenerator() {
     const [, setProjectRoot, subscribeToProjectRoot] = state('');
     const [, setObjectType, subscribeToObjectType] = state('');
     const [, setObjectTypes, subscribeToObjectTypes] = state([]);
 
-    const handleProjectSelected = (event) => {        
+    const handleProjectSelected = (event) => {
         const files = event.target.files;
 
-        if(!files || files.length === 0){
+        if (!files || files.length === 0) {
+            setProjectRoot('');
             setObjectTypes([]);
             return;
         }
@@ -28,7 +30,7 @@ function ImagePointsGenerator() {
 
             if (normalizedPath.startsWith(objectTypesFolder) && normalizedPath.endsWith('.json')) {
                 const name = file.name;
-                fileList.push({ path: normalizedPath, name});
+                fileList.push({ path: normalizedPath, name });
             }
         }
 
@@ -39,22 +41,25 @@ function ImagePointsGenerator() {
         h1({}, 'Image Points Generator'),
         form({},
             div({ class: 'mb-3' },
-                label({ class: 'form-label', for: 'project-folder' }, 'Select Construct 3 Project Folder'),
+                label({ class: 'form-label', for: 'project-folder' }, 'Select a Construct 3 Project Folder'),
                 input({
                     class: 'form-control', id: 'project-folder', type: 'file', webkitdirectory: "true",
                     onchange: handleProjectSelected
                 })
             ),
-            div({ class: 'mb-3', },
-                label({ class: 'form-label', for: 'project-object-type' }, 'Select Object Type'),
+            div({},
                 sideEffect(
-                    (files) => select({ class: 'form-control', id: 'project-object-type', disabled: files.length === 0 }, 
-                        option({}, files.length === 0 ? 'Select a project Folder First' : '-- Select an object type --'),
-                        ...files.map(({ path, name}) => option({ value: path }, name))
+                    (projectRoot, objectTypes) => (
+                        projectRoot && projectRoot.length > 0 && objectTypes.length === 0 ? span({ class: 'text-danger' }, 'Select a valid C3 project folder') : ''
                     ),
+                    subscribeToProjectRoot,
                     subscribeToObjectTypes
-                ),
-            )
+                )
+            ),
+            sideEffect(
+                objectTypes => ObjectTypesSelect({ objectTypes }),
+                subscribeToObjectTypes
+            ),
         )
     )
 }
