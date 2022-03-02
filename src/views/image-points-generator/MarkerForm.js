@@ -1,8 +1,8 @@
-import { button, div, form, label, input, span, state, sideEffect } from '../../../public/justjs/index.js';
+import { button, div, input, state, sideEffect } from '../../../public/justjs/index.js';
 
 function MarkerForm({ onAddMarker }) {
   const [getNumber, setNumber, subscribeToNumber] = state(0);
-  const [getName, setName, subscribeToName] = state('');
+  const [getName, setName, subscribeToName] = state('Origin');
   const [getColor, setColor, subscribeToColor] = state('#000000');
 
   const handleNumberChanged = (e) => setNumber(parseInt(e.target.value));
@@ -13,12 +13,12 @@ function MarkerForm({ onAddMarker }) {
 
     onAddMarker({ number: getNumber(), name: getName(), color: getColor() });
 
-    setName('');
-    setNumber(getNumber() + 1);
+    const nextNumber = getNumber() + 1;
+    setName(`Image Point ${nextNumber}`);
+    setNumber(nextNumber);
   }
 
   return div({},
-    label({ class: "control-label", for: "image-point-name" }, "Image Point Markers"),
     div({ class: "input-group mb-3" },
       input({
         type: "number",

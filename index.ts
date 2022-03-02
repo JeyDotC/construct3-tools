@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 
 function createWindow() {
@@ -10,7 +10,12 @@ function createWindow() {
         }
     });
 
-    win.loadFile('public/index.html')
+    ipcMain.on('generate-image-points', function(event, params){
+        console.log(params);
+        win.webContents.send("progress", params);
+    });
+
+    win.loadFile('public/index.html');
 }
 
 app.whenReady().then(() => {
