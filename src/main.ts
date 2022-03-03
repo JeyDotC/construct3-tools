@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
-const path = require('path')
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+//const { init } = require('./src/services/main/init');
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -10,10 +11,7 @@ function createWindow() {
         }
     });
 
-    ipcMain.on('generate-image-points', function(event, params){
-        console.log(params);
-        win.webContents.send("progress", params);
-    });
+    //init(win.webContents, ipcMain);
 
     win.loadFile('public/index.html');
 }

@@ -3,11 +3,15 @@ import { MarkerEntry } from './MarkerEntry.js';
 import { MarkerForm } from './MarkerForm.js';
 import { ObjectTypesSelect } from './ObjecTypesSelect.js';
 
+//window.taskNotifier.onTasksStarted((event, tasks) => console.log('Tasks Started:', tasks));
+
 function ImagePointsGenerator() {
     const [getProjectRoot, setProjectRoot, subscribeToProjectRoot] = state('');
     const [getObjectType, setObjectType, subscribeToObjectType] = state('');
     const [, setObjectTypes, subscribeToObjectTypes] = state([]);
     const [getMarkers, setMarkers, subscribeToMarkers] = state([]);
+
+    console.log(window.taskNotifier);   
 
     const handleProjectSelected = (event) => {
         const files = event.target.files;

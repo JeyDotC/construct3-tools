@@ -4,7 +4,8 @@
   "description": "Tools for Construct3 projects,",
   "main": "index.js",
   "scripts": {
-    "start": "bash ./setup-justjs.sh && electron ./index.ts",
+    "build": "tsc",
+    "start": "bash ./setup-justjs.sh && npm run build && cp -r ./public ./dist/public && electron ./dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,6 +20,7 @@
     "image-pixels": "^2.2.2"
   },
   "devDependencies": {
-    "electron": "^17.0.1"
+    "electron": "^17.0.1",
+    "typescript": "^4.6.2"
   }
 }
