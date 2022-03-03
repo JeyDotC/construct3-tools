@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { processAnimations } = require('./processAnimations');
 
-export type MakerData = {
+export type MarkerData = {
     name: string,
     marker: [number, number, number],
 };
@@ -9,7 +9,7 @@ export type MakerData = {
 export type GenerateImagePointsParameters = {
     projectRoot: string,
     objectType: string,
-    markers: Record<number, MakerData>,
+    markers: Record<number, MarkerData>,
 };
 
 function generateImagePoints({projectRoot, objectType, markers}: GenerateImagePointsParameters) {
