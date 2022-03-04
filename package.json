@@ -4,8 +4,9 @@
   "description": "Tools for Construct3 projects,",
   "main": "index.js",
   "scripts": {
+    "clean": "rm -rf ./dist",
     "build": "tsc",
-    "start": "bash ./setup-justjs.sh && npm run build && cp -r ./public ./dist/public && electron ./dist/main.js",
+    "start": "npm run build && electron ./dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -16,7 +17,6 @@
   "author": "JeyDotC",
   "license": "MIT",
   "dependencies": {
-    "@jeydotc/justjs": "^1.0.1",
     "image-pixels": "^2.2.2"
   },
   "devDependencies": {

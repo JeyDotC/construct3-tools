@@ -8,7 +8,7 @@ function init(
 ) {
     const tasksNotifier = new TaskNotifierMain(webContents);
 
-    ipcMain.on('generate-image-points', function (event, params: GenerateImagePointsParameters) {
+    ipcMain.on(generateImagePoints.name, function (event, params: GenerateImagePointsParameters) {
         generateImagePoints({
             ...params,
             tasksNotifier,

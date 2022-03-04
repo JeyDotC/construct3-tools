@@ -1,4 +1,4 @@
-import { button, div,  input, span, } from '../../../public/justjs/index.js';
+import { button, div,  input, span, } from '../../public/justjs/index.js';
 
 function MarkerEntry({ number, name, color, onRemoveMarker, onMarkerChanged }){
 

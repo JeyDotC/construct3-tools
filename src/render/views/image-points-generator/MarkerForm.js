@@ -1,4 +1,4 @@
-import { button, div, input, state, sideEffect } from '../../../public/justjs/index.js';
+import { button, div, input, state, sideEffect } from '../../public/justjs/index.js';
 
 function MarkerForm({ onAddMarker }) {
   const [getNumber, setNumber, subscribeToNumber] = state(0);
@@ -22,11 +22,10 @@ function MarkerForm({ onAddMarker }) {
     div({ class: "input-group mb-3" },
       input({
         type: "number",
-        class: "form-control",
+        class: "form-control mw-4",
         value: subscribeToNumber,
         min: 0,
         step: 1,
-        style: { maxWidth: "4em" },
         onchange: handleNumberChanged
       }),
       input({

@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { init } from './services/main/init';
+
 const path = require('path');
-//const { init } = require('./src/services/main/init');
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -11,9 +12,9 @@ function createWindow() {
         }
     });
 
-    //init(win.webContents, ipcMain);
+    init(win.webContents, ipcMain);
 
-    win.loadFile('public/index.html');
+    win.loadFile('../src/render/public/index.html');
 }
 
 app.whenReady().then(() => {

@@ -1,9 +1,7 @@
-import { h1, div, form, label, input, span, button, fieldset, legend, hr, state, sideEffect } from '../../../public/justjs/index.js';
+import { h1, div, form, label, input, span, button, fieldset, legend, hr, state, sideEffect } from '../../public/justjs/index.js';
 import { MarkerEntry } from './MarkerEntry.js';
 import { MarkerForm } from './MarkerForm.js';
 import { ObjectTypesSelect } from './ObjecTypesSelect.js';
-
-//window.taskNotifier.onTasksStarted((event, tasks) => console.log('Tasks Started:', tasks));
 
 function ImagePointsGenerator() {
     const [getProjectRoot, setProjectRoot, subscribeToProjectRoot] = state('');
@@ -11,7 +9,8 @@ function ImagePointsGenerator() {
     const [, setObjectTypes, subscribeToObjectTypes] = state([]);
     const [getMarkers, setMarkers, subscribeToMarkers] = state([]);
 
-    console.log(window.taskNotifier);   
+    console.log('taskNotifier', window.electronAPI);   
+    window.electronAPI.onTasksStarted((event, tasks) => console.log('Tasks Started:', tasks));
 
     const handleProjectSelected = (event) => {
         const files = event.target.files;

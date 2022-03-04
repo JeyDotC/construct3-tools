@@ -1,4 +1,4 @@
-import {  div, label, select, option,  } from '../../../public/justjs/index.js';
+import {  div, label, select, option,  } from '../../public/justjs/index.js';
 
 function ObjectTypesSelect({ objectTypes, onObjectTypeSelected }) {
 
