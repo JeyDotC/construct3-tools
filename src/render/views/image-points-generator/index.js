@@ -3,13 +3,27 @@ import { MarkerEntry } from './MarkerEntry.js';
 import { MarkerForm } from './MarkerForm.js';
 import { ObjectTypesSelect } from './ObjecTypesSelect.js';
 
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : { r: 0, g: 0, b: 0};
+}
+
 function ImagePointsGenerator() {
     const [getProjectRoot, setProjectRoot, subscribeToProjectRoot] = state('');
     const [getObjectType, setObjectType, subscribeToObjectType] = state('');
     const [, setObjectTypes, subscribeToObjectTypes] = state([]);
     const [getMarkers, setMarkers, subscribeToMarkers] = state([]);
 
-    console.log('taskNotifier', window.electronAPI);   
     window.electronAPI.onTasksStarted((event, tasks) => console.log('Tasks Started:', tasks));
 
     const handleProjectSelected = (event) => {
@@ -54,7 +68,7 @@ function ImagePointsGenerator() {
     const handleRemoveMarker = (number) => setMarkers(getMarkers().filter((marker) => marker.number !== number));
 
     const handleMarkerChanged = ({ number, color, name }) => setMarkers(getMarkers().map((marker) => {
-        if(marker.number === number){
+        if (marker.number === number) {
             return { number, name, color, };
         }
         return marker;
@@ -65,7 +79,10 @@ function ImagePointsGenerator() {
 
         window.electronAPI.generateImagePoints({
             projectRoot: getProjectRoot(),
-            markers: getMarkers(),
+            markers: getMarkers().reduce((accumulate, { number, color, name }) => ({
+                ...accumulate,
+                [number]: { name, marker: [...Object.values(hexToRgb(color)), 255] }
+            }), {}),
             objectType: getObjectType(),
         });
     }
@@ -99,10 +116,10 @@ function ImagePointsGenerator() {
                 legend({}, "Image Point Markers"),
                 sideEffect(
                     markers => div({},
-                        ...markers.map(({ number, name, color }) => MarkerEntry({ 
-                            number, 
-                            name, 
-                            color, 
+                        ...markers.map(({ number, name, color }) => MarkerEntry({
+                            number,
+                            name,
+                            color,
                             onRemoveMarker: handleRemoveMarker,
                             onMarkerChanged: handleMarkerChanged,
                         }))
@@ -112,12 +129,12 @@ function ImagePointsGenerator() {
                 MarkerForm({ onAddMarker: handleMarkerAdd }),
             ),
             hr(),
-            div({ class: "text-end"}, 
-                button({ 
-                    class: "btn btn-primary", 
+            div({ class: "text-end" },
+                button({
+                    class: "btn btn-primary",
                     onclick: handleGenerateImagePoints,
                     disabled: sideEffect(
-                        (markers, objectType, projectRoot) => markers.length === 0 || objectType.length === 0 || projectRoot.length === 0,
+                        (markers, objectType, projectRoot) => markers.length === 0 || objectType.length === 0 || projectRoot.length === 0,
                         subscribeToMarkers,
                         subscribeToObjectType,
                         subscribeToProjectRoot

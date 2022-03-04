@@ -14,7 +14,7 @@ class TaskNotifierMain {
     }
 
     tasksStarted(tasks: Tasks){
-        this.webContents.send(this.tasksStarted.name, tasks);
+        this.webContents.send("onTasksStarted", tasks);
     }
 }
 

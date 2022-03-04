@@ -26,9 +26,8 @@ function processFrames({ markers, animation, projectRoot, objectType }) {
     return Promise
         .all(frameData.map(processFrame))
         .then((framesWithImagePoints) => framesWithImagePoints.map(({ frame, imagePoints }) => {
-
             const [firstImagePoint, ...otherImagePoints] = imagePoints;
-            const { x, y } = firstImagePoint;
+            const { x, y } = firstImagePoint || { x: frame.originX, y: frame.originY };
 
             return ({
                 ...frame,

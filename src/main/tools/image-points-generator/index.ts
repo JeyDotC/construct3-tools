@@ -1,40 +1,30 @@
-import { TaskNotifierMain, Tasks } from "../../services/main/TaskNotifierMain";
+import { TaskNotifierMain } from "../../services/main/TaskNotifierMain";
 import { AnimationFolder, ObjectType } from "../types/ObjectTypes";
+import { processAnimations } from './processAnimations';
 
 const fs = require('fs');
-const { processAnimations } = require('./processAnimations');
 
 export type MarkerData = {
     name: string,
-    marker: [number, number, number],
+    marker: [number, number, number, number],
 };
 
 export type GenerateImagePointsParameters = {
     projectRoot: string,
     objectType: string,
-    markers: Record<number, MarkerData>
+    markers: Record<string, MarkerData>
 };
 
 export type GenerateImagePointsParametersWithNotifier = {
     tasksNotifier: TaskNotifierMain,
 } & GenerateImagePointsParameters;
 
-function extractTasksFromAnimations({items, subfolders}: AnimationFolder, parent?: string): Tasks {
-    const normalizedParent = parent || '';
-    const tasks = items.reduce((accumulate, { name, frames }) => ({
-        ...accumulate,
-        [`${normalizedParent}/${name}`]: { size: frames.length },
-    }), {});
+function calculateTaskSize({items, subfolders}: AnimationFolder): number {
+    const tasks = items.reduce((accumulate, { frames }) => accumulate + frames.length, 0);
 
-    const subTasks = subfolders.reduce((accumulate, subFolder) => ({
-        ...accumulate,
-        ...extractTasksFromAnimations(subFolder, `${normalizedParent}/${subFolder.name}`),
-    }), {})
+    const subTasks = subfolders.reduce((accumulate, subFolder) => (accumulate + calculateTaskSize(subFolder)), 0);
 
-    return {
-        ...tasks,
-        ...subTasks
-    };
+    return (tasks + subTasks);
 }
 
 function generateImagePoints({ projectRoot, objectType, markers, tasksNotifier }: GenerateImagePointsParametersWithNotifier) {
@@ -44,9 +34,12 @@ function generateImagePoints({ projectRoot, objectType, markers, tasksNotifier }
 
     const { animations } = spriteMetadata;
 
-    const tasks = extractTasksFromAnimations(animations);
+    const size = calculateTaskSize(animations);
+    const taskName = `Generate Image Points For ${objectType}`;
 
-    tasksNotifier.tasksStarted(tasks);
+    tasksNotifier.tasksStarted({
+        [taskName]: { size },
+    });
 
     return processAnimations({ animations, markers, projectRoot, objectType })
         .then((animations) => {
