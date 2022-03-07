@@ -11,6 +11,8 @@
     "clean": "rm -rf ./dist",
     "build": "npm run clean && npm run _build-main && npm run _build-render",
     "start": "npm run build && electron ./dist/main/main.js",
+    "watch": "tsc --project ./src/render/tsconfig.json --watch",
+    "watch-main": "tsc --project ./src/main/tsconfig.json --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

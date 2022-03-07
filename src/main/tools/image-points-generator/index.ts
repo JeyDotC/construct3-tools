@@ -44,8 +44,10 @@ function generateImagePoints({ projectRoot, objectType, markers, tasksNotifier }
     return processAnimations({ animations, markers, projectRoot, objectType })
         .then((animations) => {
             spriteMetadata.animations = animations;
-            console.log();
-            console.log("Writing image points into project...");
+            const taskName = "Writing image points into project...";
+            tasksNotifier.tasksStarted({
+                [taskName]: { size: 1 },
+            });
             fs.writeFileSync(`${projectRoot}/objectTypes/${objectType}.json-x`, JSON.stringify(spriteMetadata));
             console.log("DONE.");
         });

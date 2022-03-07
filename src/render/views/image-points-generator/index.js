@@ -24,8 +24,6 @@ function ImagePointsGenerator() {
     const [, setObjectTypes, subscribeToObjectTypes] = state([]);
     const [getMarkers, setMarkers, subscribeToMarkers] = state([]);
 
-    window.electronAPI.onTasksStarted((event, tasks) => console.log('Tasks Started:', tasks));
-
     const handleProjectSelected = (event) => {
         const files = event.target.files;
 
