@@ -1,4 +1,4 @@
-import { div, span } from "../../public/justjs/index.js";
+import { div } from "../../public/justjs/index.js";
 
 type Task = {
   size: number,
