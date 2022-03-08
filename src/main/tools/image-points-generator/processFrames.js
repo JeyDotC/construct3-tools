@@ -1,10 +1,8 @@
 const { processImage } = require('./processImage');
 
-function processFrames({ markers, animation, projectRoot, objectType }) {
+function processFrames({ markers, animation, projectRoot, objectType, onFrameProcessed }) {
 
     const { frames, name } = animation;
-
-    console.log(`  Processing animation ${name}`);
 
     const frameData = frames
         .map((frame, index) => ({
@@ -14,12 +12,8 @@ function processFrames({ markers, animation, projectRoot, objectType }) {
 
     const processFrame = ({ frame, file }, index) => processImage({ file, markers })
         .then(imagePoints => {
-            const percentage = ((index + 1) / frames.length) * 100;
-            const progressCharacters = percentage.toFixed(0) / 10;
-            const visualProgress = "=".repeat(progressCharacters);
-            const visualRemaining = " ".repeat(10 - progressCharacters);
-
-            process.stdout.write(`\r  [${visualProgress}${visualRemaining}] ${percentage.toFixed(2)}%`);
+            onFrameProcessed();
+            
             return { frame, file, imagePoints };
         });
 
@@ -37,8 +31,6 @@ function processFrames({ markers, animation, projectRoot, objectType }) {
             });
         }))
         .then((framesWithImagePoints) => {
-            console.log();
-            console.log(`  Done animation ${name}`);
             return framesWithImagePoints;
         });
 }

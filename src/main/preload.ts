@@ -5,6 +5,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     generateImagePoints: (commandParams) => ipcRenderer.send('generateImagePoints', commandParams),
 
     // Receive From Main
-    onImagePointsProgress: (handler) => ipcRenderer.on("progress", handler),
+    onTaskProgress: (handler) => ipcRenderer.on("onTaskProgress", handler),
     onTasksStarted: (listener) => ipcRenderer.on("onTasksStarted", listener),
 });

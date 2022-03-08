@@ -85,8 +85,6 @@ function ImagePointsGenerator() {
         });
     }
 
-    window.electronAPI.onImagePointsProgress((e, params) => console.log(params));
-
     return div({},
         h1({}, 'Image Points Generator'),
         form({},

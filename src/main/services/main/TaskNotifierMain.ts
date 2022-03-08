@@ -16,6 +16,10 @@ class TaskNotifierMain {
     tasksStarted(tasks: Tasks){
         this.webContents.send("onTasksStarted", tasks);
     }
+
+    taskProgress(task: string, totalProgress: number){
+        this.webContents.send("onTaskProgress", { task, totalProgress });
+    }
 }
 
 export { TaskNotifierMain }

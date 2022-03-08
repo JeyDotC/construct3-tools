@@ -41,15 +41,25 @@ function generateImagePoints({ projectRoot, objectType, markers, tasksNotifier }
         [taskName]: { size },
     });
 
-    return processAnimations({ animations, markers, projectRoot, objectType })
+    let totalProgress = 0;
+
+    const onFrameProcessed = () => {
+        totalProgress++;
+        tasksNotifier.taskProgress(taskName, totalProgress);
+    }
+
+    return processAnimations({ animations, markers, projectRoot, objectType, onFrameProcessed })
         .then((animations) => {
             spriteMetadata.animations = animations;
+
             const taskName = "Writing image points into project...";
             tasksNotifier.tasksStarted({
                 [taskName]: { size: 1 },
             });
+
             fs.writeFileSync(`${projectRoot}/objectTypes/${objectType}.json-x`, JSON.stringify(spriteMetadata));
-            console.log("DONE.");
+            
+            tasksNotifier.taskProgress(taskName, 1);
         });
 }
 

@@ -1,6 +1,6 @@
 const { processFrames } = require("./processFrames");
 
-async function processAnimations({ animations, markers, projectRoot, objectType}) {
+async function processAnimations({ animations, markers, projectRoot, objectType, onFrameProcessed}) {
 
     const { items, subfolders, name } = animations;
 
@@ -8,7 +8,7 @@ async function processAnimations({ animations, markers, projectRoot, objectType}
     console.log(`Processing Folder ${folderName} with ${items.length} animations.`);
 
     const newAnimationItemJobs = items.map(
-        (animation) => processFrames({ markers, animation, projectRoot, objectType }).then((frames) => ({...animation, frames}))
+        (animation) => processFrames({ markers, animation, projectRoot, objectType, onFrameProcessed }).then((frames) => ({...animation, frames}))
     );
     
     const newItems = await Promise.all(newAnimationItemJobs);
