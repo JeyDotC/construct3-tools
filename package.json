@@ -10,10 +10,11 @@
     
     "clean": "rm -rf ./dist",
     "build": "npm run clean && npm run _build-main && npm run _build-render",
-    "start": "npm run build && electron ./dist/main/main.js",
+    "start": "npm run build && electron-forge start",
     "watch": "tsc --project ./src/render/tsconfig.json --watch",
-    "watch-main": "tsc --project ./src/main/tsconfig.json --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "npm run build && electron-forge package",
+    "make": "electron-forge make"
   },
   "keywords": [
     "construct3",
@@ -23,10 +24,47 @@
   "author": "JeyDotC",
   "license": "MIT",
   "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
     "image-pixels": "^2.2.2"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
     "electron": "^17.0.1",
     "typescript": "^4.6.2"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "ignore": [
+          "src"
+        ]
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "construct3_kit"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }

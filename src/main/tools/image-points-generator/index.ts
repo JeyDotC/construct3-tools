@@ -57,7 +57,7 @@ function generateImagePoints({ projectRoot, objectType, markers, tasksNotifier }
                 [taskName]: { size: 1 },
             });
 
-            fs.writeFileSync(`${projectRoot}/objectTypes/${objectType}.json-x`, JSON.stringify(spriteMetadata));
+            fs.writeFileSync(`${projectRoot}/objectTypes/${objectType}.json`, JSON.stringify(spriteMetadata));
             
             tasksNotifier.taskProgress(taskName, 1);
         });

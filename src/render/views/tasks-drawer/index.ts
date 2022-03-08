@@ -25,14 +25,15 @@ function TasksDrawer() {
     }
 
     // @ts-ignore
-    return bootstrap.Offcanvas.getOrCreateInstance(element);
+    return bootstrap.Offcanvas.getOrCreateInstance(element, { scroll: true });
   }
 
   return (
     div({},
       div({ class: "text-end fixed-bottom" },
         button({
-          class: "btn btn-sm",
+          class: "btn btn-sm btn-outline-dark",
+          title: "Toggle Tasks Drawer",
           type: "button",
           data: {
             bsToggle: "offcanvas",
@@ -42,12 +43,26 @@ function TasksDrawer() {
           "Tasks"
         )
       ),
-      div({ class: "offcanvas offcanvas-bottom", tabindex: "-1", id: "runningTasks" },
+      div({ 
+          id: "runningTasks", 
+          class: "offcanvas offcanvas-bottom", 
+          data: {
+            bsScroll: "true"
+          },
+          tabindex: "-1", 
+        },
         div({ class: "offcanvas-header" },
           h5({ class: "offcanvas-title" },
             "Running Tasks", br(),
             button({ class: "btn btn-link btn-sm", onClick: handleRemoveCompletedTasks }, "Remove Completed Tasks")),
-            button({ type: "button", class: "btn btn-sm", data: { bsDismiss: "offcanvas" } }, "Tasks"),
+            button({ 
+                type: "button", 
+                title: "Toggle Tasks Drawer",
+                class: "btn btn-sm btn-outline-dark", 
+                data: { bsDismiss: "offcanvas" } 
+              }, 
+              "Tasks"
+            ),
         ),
         div({ class: "offcanvas-body" },
           sideEffect(

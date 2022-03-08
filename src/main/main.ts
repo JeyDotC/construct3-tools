@@ -14,7 +14,7 @@ function createWindow() {
 
     init(win.webContents, ipcMain);
 
-    win.loadFile('../render/public/index.html');
+    win.loadFile(path.join(__dirname, '../render/public/index.html'));
 }
 
 app.whenReady().then(() => {
