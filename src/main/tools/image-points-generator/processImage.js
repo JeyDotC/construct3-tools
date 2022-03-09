@@ -1,5 +1,9 @@
 const pixels = require('image-pixels');
 
+function closeTo(value, target, tolerance = 2){
+    return value >= target - tolerance && value <= target + tolerance;
+}
+
 async function processImage({ file, markers, }) {
     const { data, width, height } = await pixels(file);
 
@@ -13,9 +17,9 @@ async function processImage({ file, markers, }) {
             ([, { marker }]) => {
                 const [stackR, stackG, stackB, stackA] = marker;
                 return (
-                    stackR === R &&
-                    stackG === G &&
-                    stackB === B &&
+                    closeTo(stackR, R) &&
+                    closeTo(stackG, G) &&
+                    closeTo(stackB, B) &&
                     stackA === A
                 );
             }) || [];
