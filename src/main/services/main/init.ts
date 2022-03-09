@@ -1,5 +1,5 @@
 import { TaskNotifierMain } from "./TaskNotifierMain";
-import { generateImagePoints, GenerateImagePointsParameters } from "../../tools/image-points-generator";
+import { generateImagePoints, GenerateImagePointsParameters, loadImagePointsSpec, saveImagePointsSpec } from "../../tools/image-points-generator";
 import { IpcMain, WebContents } from "electron";
 
 function init(
@@ -13,6 +13,23 @@ function init(
             ...params,
             tasksNotifier,
         });
+    });
+
+    ipcMain.on(saveImagePointsSpec.name, function (event, params: GenerateImagePointsParameters) {
+        try {
+            saveImagePointsSpec(params);
+        } finally {
+            webContents.send('saveImagePointsSpec');
+        }
+    });
+
+    ipcMain.on(loadImagePointsSpec.name, function (event, projectRoot: string, objectType: string) {
+        let imagePointsSpec = undefined;
+        try {
+            imagePointsSpec = loadImagePointsSpec(projectRoot, objectType);
+        } finally {
+            webContents.send('loadImagePointsSpec', imagePointsSpec);
+        }
     });
 }
 

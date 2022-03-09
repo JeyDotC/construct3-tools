@@ -14,7 +14,7 @@ function ObjectTypesSelect({ objectTypes, onObjectTypeSelected }) {
           disabled,
           onchange: (e) => onObjectTypeSelected(e.target.value)
         },
-        option({}, disabled ? 'Select a project Folder First' : '-- Select an object type --'),
+        option({ value: '' }, disabled ? 'Select a project Folder First' : '-- Select an object type --'),
         ...objectTypes.map(({ name }) => option({ value: name }, name))
       )
     )

@@ -1,4 +1,4 @@
-import { h1, div, form, label, input, span, button, fieldset, legend, hr, state, sideEffect } from '../../public/justjs/index.js';
+import { h1, div, form, label, input, span, button, fieldset, legend, hr, state, sideEffect, h2 } from '../../public/justjs/index.js';
 import { MarkerEntry } from './MarkerEntry.js';
 import { MarkerForm } from './MarkerForm.js';
 import { ObjectTypesSelect } from './ObjecTypesSelect.js';
@@ -15,7 +15,7 @@ function hexToRgb(hex) {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
-    } : { r: 0, g: 0, b: 0};
+    } : { r: 0, g: 0, b: 0 };
 }
 
 function ImagePointsGenerator() {
@@ -23,6 +23,17 @@ function ImagePointsGenerator() {
     const [getObjectType, setObjectType, subscribeToObjectType] = state('');
     const [, setObjectTypes, subscribeToObjectTypes] = state([]);
     const [getMarkers, setMarkers, subscribeToMarkers] = state([]);
+    const [, setMarkersAreSaving, subscribeToMarkersAreSaving] = state(false);
+
+    const [getAvailableMarkers, setAvailableMarkers, subscribeToAvailableMarkers] = state(undefined);
+
+    const markersAreConfigured = (markers, objectType, projectRoot) => markers.length === 0 || objectType.length === 0 || projectRoot.length === 0;
+    const markersAreSaving  = (markers, objectType, projectRoot, markersAreSaving) => markersAreConfigured(markers, objectType, projectRoot) || markersAreSaving;
+
+    const prepareMarkers = () => getMarkers().reduce((accumulate, { number, color, name }) => ({
+        ...accumulate,
+        [number]: { name, marker: [...Object.values(hexToRgb(color)), 255] }
+    }), {});
 
     const handleProjectSelected = (event) => {
         const files = event.target.files;
@@ -55,6 +66,14 @@ function ImagePointsGenerator() {
         setObjectTypes(fileList);
     };
 
+    const handleObjectTypeSelected = (objectType) => {
+        setObjectType(objectType);
+
+        if(objectType.length > 0){
+            window.electronAPI.loadImagePointsSpec(getProjectRoot(), objectType)
+        }
+    };
+
     const handleMarkerAdd = (marker) => {
         const currentMarkers = getMarkers();
         // Avoid repeated numbers and replace them with the newer version.
@@ -70,24 +89,56 @@ function ImagePointsGenerator() {
             return { number, name, color, };
         }
         return marker;
-    }))
+    }));
+
+    const handleSaveMarkers = (e) => {
+        e.preventDefault();
+
+        setMarkersAreSaving(true);
+
+        window.electronAPI.saveImagePointsSpec({
+            projectRoot: getProjectRoot(),
+            markers: prepareMarkers(),
+            objectType: getObjectType(),
+        });
+    }
+
+    window.electronAPI.onSaveImagePointsSpec(() => setMarkersAreSaving(false));
+    window.electronAPI.onLoadImagePointsSpec((event, data) => {
+        setAvailableMarkers(data);
+    });
 
     const handleGenerateImagePoints = (e) => {
         e.preventDefault();
 
         window.electronAPI.generateImagePoints({
             projectRoot: getProjectRoot(),
-            markers: getMarkers().reduce((accumulate, { number, color, name }) => ({
-                ...accumulate,
-                [number]: { name, marker: [...Object.values(hexToRgb(color)), 255] }
-            }), {}),
+            markers: prepareMarkers(),
             objectType: getObjectType(),
         });
-    }
+    };
+
+    const handleRejectAvailableMarkers = (e) => {
+        e.preventDefault();
+
+        setAvailableMarkers(undefined);
+    };
+
+    const handleLoadAvailableMarkers = (e) => {
+        e.preventDefault();
+
+        const markers = Object.entries(getAvailableMarkers())
+            .map(([number, {name, marker}]) => ({ number, name, color: `#${marker[0].toString(16)}${marker[1].toString(16)}${marker[2].toString(16)}` }));
+
+        setMarkers(markers);
+        setAvailableMarkers(undefined);
+    };
 
     return div({},
         h1({}, 'Image Points Generator'),
         form({},
+            label({}, 'Project: '),
+            span({}, subscribeToProjectRoot),
             div({ class: 'mb-3' },
                 label({ class: 'form-label', for: 'project-folder' }, 'Select a Construct 3 Project Folder'),
                 input({
@@ -105,11 +156,25 @@ function ImagePointsGenerator() {
                 )
             ),
             sideEffect(
-                objectTypes => ObjectTypesSelect({ objectTypes, onObjectTypeSelected: setObjectType }),
+                objectTypes => ObjectTypesSelect({ objectTypes, onObjectTypeSelected: handleObjectTypeSelected }),
                 subscribeToObjectTypes
             ),
             fieldset({},
                 legend({}, "Image Point Markers"),
+                sideEffect(
+                    (availableMarkers) => {
+                        if(availableMarkers === undefined){
+                            return "";
+                        }
+                        return div({ class: "small" },
+                            "There are markers available, load them?: ",
+                            button({ class: "btn btn-primary btn-sm", onclick: handleLoadAvailableMarkers }, "Yes"),
+                            ' ',
+                            button({ class: "btn btn-danger btn-sm", onclick: handleRejectAvailableMarkers }, "No")
+                        );
+                    },
+                    subscribeToAvailableMarkers
+                ),
                 sideEffect(
                     markers => div({},
                         ...markers.map(({ number, name, color }) => MarkerEntry({
@@ -126,11 +191,23 @@ function ImagePointsGenerator() {
             ),
             hr(),
             div({ class: "text-end" },
+                button({ 
+                    class: "btn btn-secondary", 
+                    onclick: handleSaveMarkers,
+                    disabled: sideEffect(
+                        markersAreSaving,
+                        subscribeToMarkers,
+                        subscribeToObjectType,
+                        subscribeToProjectRoot,
+                        subscribeToMarkersAreSaving
+                    ),
+                }, "Save Markers"),
+                " ",
                 button({
                     class: "btn btn-primary",
                     onclick: handleGenerateImagePoints,
                     disabled: sideEffect(
-                        (markers, objectType, projectRoot) => markers.length === 0 || objectType.length === 0 || projectRoot.length === 0,
+                        markersAreConfigured,
                         subscribeToMarkers,
                         subscribeToObjectType,
                         subscribeToProjectRoot

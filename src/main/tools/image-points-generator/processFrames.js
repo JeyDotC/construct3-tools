@@ -1,5 +1,7 @@
 const { processImage } = require('./processImage');
 
+const path = require('path');
+
 function processFrames({ markers, animation, projectRoot, objectType, onFrameProcessed }) {
 
     const { frames, name } = animation;
@@ -7,7 +9,7 @@ function processFrames({ markers, animation, projectRoot, objectType, onFramePro
     const frameData = frames
         .map((frame, index) => ({
             frame,
-            file: `${projectRoot}/images/${objectType.toLowerCase()}-${name.toLowerCase()}-${String(index).padStart(3, '0')}.${frame.exportFormat}`
+            file: path.join(projectRoot, 'images', `${objectType.toLowerCase()}-${name.toLowerCase()}-${String(index).padStart(3, '0')}.${frame.exportFormat}`),
         }));
 
     const processFrame = ({ frame, file }, index) => processImage({ file, markers })

@@ -2,6 +2,8 @@ import { TaskNotifierMain } from "../../services/main/TaskNotifierMain";
 import { AnimationFolder, ObjectType } from "../types/ObjectTypes";
 import { processAnimations } from './processAnimations';
 
+const path = require('path');
+
 const fs = require('fs');
 
 export type MarkerData = {
@@ -19,7 +21,7 @@ export type GenerateImagePointsParametersWithNotifier = {
     tasksNotifier: TaskNotifierMain,
 } & GenerateImagePointsParameters;
 
-function calculateTaskSize({items, subfolders}: AnimationFolder): number {
+function calculateTaskSize({ items, subfolders }: AnimationFolder): number {
     const tasks = items.reduce((accumulate, { frames }) => accumulate + frames.length, 0);
 
     const subTasks = subfolders.reduce((accumulate, subFolder) => (accumulate + calculateTaskSize(subFolder)), 0);
@@ -58,9 +60,34 @@ function generateImagePoints({ projectRoot, objectType, markers, tasksNotifier }
             });
 
             fs.writeFileSync(`${projectRoot}/objectTypes/${objectType}.json`, JSON.stringify(spriteMetadata));
-            
+
             tasksNotifier.taskProgress(taskName, 1);
-        });
+        }).catch((errors) => console.log(errors));
 }
 
-export { generateImagePoints };
+function saveImagePointsSpec({ projectRoot, objectType, markers }: GenerateImagePointsParameters) {
+    const dir =  path.join(projectRoot, '.c3-tools');
+    
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    
+    const file = path.join(dir, `${objectType}.json`)
+    const markersData = JSON.stringify(markers);
+
+    fs.writeFileSync(file, markersData);
+}
+
+function loadImagePointsSpec(projectRoot: string, objectType: string): Record<string, MarkerData> | undefined {
+    const file = path.join(projectRoot, '.c3-tools', `${objectType}.json`);
+    console.log(file);
+    if (!fs.existsSync(file)) {
+        return undefined;
+    }
+
+    const rawFileData = fs.readFileSync(file);
+
+    return JSON.parse(rawFileData);
+}
+
+export { generateImagePoints, saveImagePointsSpec, loadImagePointsSpec };

@@ -1,4 +1,4 @@
-import { button, div, input, state, sideEffect } from '../../public/justjs/index.js';
+import { button, div, input, state, sideEffect, label } from '../../public/justjs/index.js';
 
 function MarkerForm({ onAddMarker }) {
   const [getNumber, setNumber, subscribeToNumber] = state(0);
@@ -19,6 +19,7 @@ function MarkerForm({ onAddMarker }) {
   }
 
   return div({},
+    label({}, "Add Marker"),
     div({ class: "input-group mb-3" },
       input({
         type: "number",
