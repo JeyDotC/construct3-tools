@@ -1,20 +1,19 @@
 {
-  "name": "construct3-kit",
-  "version": "1.0.0",
+  "name": "construct3-tools",
+  "version": "0.0.1",
   "description": "Tools for Construct3 projects,",
   "main": "index.js",
   "scripts": {
     "_build-main": "tsc --project ./src/main/tsconfig.json",
     "_copy-assets": "cp ./src/render/public/index.html ./dist/render/public/index.html && cp -r ./src/render/public/css ./dist/render/public",
     "_build-render": "tsc --project ./src/render/tsconfig.json && npm run _copy-assets",
-    
     "clean": "rm -rf ./dist",
     "build": "npm run clean && npm run _build-main && npm run _build-render",
     "start": "npm run build && electron-forge start",
     "watch": "tsc --project ./src/render/tsconfig.json --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "npm run build && electron-forge package",
-    "make": "electron-forge make"
+    "make": "npm run build && electron-forge make"
   },
   "keywords": [
     "construct3",
